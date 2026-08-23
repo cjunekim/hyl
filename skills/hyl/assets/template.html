@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="__LANG__">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="hyl">
+<title>__TITLE__</title>
+<style>
+:root{
+  --bg:#faf9f7; --fg:#1a1a1a; --muted:#6b6b6b; --accent:#0b57d0;
+  --ts:#7a4d00; --sec-bg:#ffffff; --border:#e3e0da; --hover:#f0eee9;
+  --cursor-bg:rgba(11,87,208,.10); --cursor-bar:#0b57d0;
+  --hit-bg:rgba(224,169,66,.14);
+  --mark-bg:#ffdf70; --mark-fg:#4a3a00; --mark-act-bg:#ff9d2e; --mark-act-fg:#331f00;
+  --scrim:rgba(26,26,26,.44); --kbd-bg:#f3f1ec; --kbd-fg:#3a3a3a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161513; --fg:#e8e6e3; --muted:#9a978f; --accent:#8ab4f8;
+    --ts:#e0b36a; --sec-bg:#1e1d1a; --border:#33312c; --hover:#26241f;
+    --cursor-bg:rgba(138,180,248,.14); --cursor-bar:#8ab4f8;
+    --hit-bg:rgba(224,179,106,.14);
+    --mark-bg:#6b5511; --mark-fg:#ffe9ad; --mark-act-bg:#b97a1c; --mark-act-fg:#fff4d6;
+    --scrim:rgba(0,0,0,.6); --kbd-bg:#2b2925; --kbd-fg:#ddd9d2;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161513; --fg:#e8e6e3; --muted:#9a978f; --accent:#8ab4f8;
+  --ts:#e0b36a; --sec-bg:#1e1d1a; --border:#33312c; --hover:#26241f;
+  --cursor-bg:rgba(138,180,248,.14); --cursor-bar:#8ab4f8;
+  --hit-bg:rgba(224,179,106,.14);
+  --mark-bg:#6b5511; --mark-fg:#ffe9ad; --mark-act-bg:#b97a1c; --mark-act-fg:#fff4d6;
+  --scrim:rgba(0,0,0,.6); --kbd-bg:#2b2925; --kbd-fg:#ddd9d2;
+}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:960px;padding:1.5rem 1.25rem 5.5rem;
+  background:var(--bg);color:var(--fg);line-height:1.6;
+  font-family:"Segoe UI","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+header h1{font-size:1.5rem;line-height:1.35;margin:0 0 .35rem}
+header h1 a{color:var(--fg);text-decoration:none}
+header h1 a:hover{color:var(--accent)}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 .75rem}
+.controls{margin:0 0 1rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.controls button{font:inherit;font-size:.85rem;padding:.3rem .7rem;
+  border:1px solid var(--border);border-radius:6px;background:var(--sec-bg);
+  color:var(--fg);cursor:pointer}
+.controls button:hover{background:var(--hover)}
+.controls button:focus-visible,summary:focus-visible,a:focus-visible,
+li:focus-visible,.fold-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a.ts{font-family:ui-monospace,Consolas,monospace;font-size:.86em;color:var(--ts);
+  text-decoration:none;white-space:nowrap}
+a.ts:hover{text-decoration:underline}
+nav.toc{border:1px solid var(--border);border-radius:8px;background:var(--sec-bg);
+  padding:.5rem .9rem;margin-bottom:1.5rem}
+nav.toc summary{cursor:pointer;font-weight:600}
+nav.toc ul{list-style:none;margin:.5rem 0 .25rem;padding:0}
+nav.toc li{margin:.2rem 0}
+nav.toc a{color:var(--fg);text-decoration:none}
+nav.toc a:hover{color:var(--accent)}
+nav.toc .toc-ts{font-family:ui-monospace,Consolas,monospace;font-size:.85em;
+  color:var(--ts);margin-right:.4em}
+details.sec{border:1px solid var(--border);border-radius:8px;background:var(--sec-bg);
+  margin:0 0 .8rem;padding:.15rem .9rem}
+details.sec>summary{cursor:pointer;padding:.45rem 0;font-weight:600;list-style:none}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary .hdr{margin-left:.35em}
+main ul{list-style:none;margin:.15rem 0 .6rem;padding-left:1.5rem}
+main li{margin:.28rem 0;padding-left:.2rem}
+main ul ul{margin:.15rem 0 .15rem;padding-left:1.6rem}
+main ul ul li{opacity:.92;font-size:.97em}
+p.silence{color:var(--muted);font-style:italic;margin:.4rem .2rem .9rem}
+
+/* --- hanging indent: a wrapped line resumes under the text column, never left of it.
+       --hang IS the measured width of caret + fold slot + timestamp, set once by script
+       in em, so every level scales with its own font-size. --- */
+main{--hang:0em}
+main li,main p.silence{padding-left:calc(.2rem + var(--hang));
+  text-indent:calc(-1 * var(--hang))}
+main details.sec>summary{padding-left:var(--hang);text-indent:calc(-1 * var(--hang))}
+main li>ul{margin-left:calc(-1 * var(--hang))}
+
+/* --- the cursor line: a caret in a reserved gutter on every row --- */
+main summary,main li,main p.silence{scroll-margin:5rem 0 6rem}
+main .hyl-caret{display:inline-block;width:1em;flex:none;color:transparent;
+  font-family:ui-monospace,Consolas,monospace;font-size:1.05em;font-weight:700;
+  -webkit-user-select:none;user-select:none}
+main .hyl-cursor>.hyl-caret{color:var(--cursor-bar)}
+main .hyl-cursor{background:var(--cursor-bg);border-radius:4px;outline:none !important}
+.hyl-hit{background:var(--hit-bg);border-radius:3px}
+mark.hyl-mark{background:var(--mark-bg);color:var(--mark-fg);border-radius:3px;
+  padding:0 .08em;font-weight:600}
+mark.hyl-mark.act{background:var(--mark-act-bg);color:var(--mark-act-fg)}
+
+/* --- fold marker, its own reserved slot so every row's text aligns --- */
+main .fold-slot{display:inline-block;width:1em;flex:none;text-align:left;
+  font-family:ui-monospace,Consolas,monospace;font-size:.78em;color:var(--muted)}
+/* the chevron IS the fold state — derived in CSS, so folding writes no glyphs */
+main .fold-slot>*::before{content:"\25BE"}
+details.sec:not([open])>summary>.fold-slot>*::before{content:"\25B8"}
+main li.hyl-folded>.fold-slot>*::before{content:"\25B8"}
+.fold-btn{font:inherit;line-height:1;color:inherit;background:none;border:0;
+  cursor:pointer;padding:0;width:100%;text-align:left}
+.fold-btn:hover{color:var(--accent)}
+li.hyl-folded>ul{display:none}
+li.hyl-folded::after{content:" \2026";color:var(--muted);font-size:.85em}
+
+/* --- search bar --- */
+.hyl-find{position:fixed;left:50%;transform:translateX(-50%);bottom:3.2rem;z-index:40;
+  display:none;gap:.5rem;align-items:center;background:var(--sec-bg);
+  border:1px solid var(--border);border-radius:8px;padding:.45rem .7rem;
+  box-shadow:0 6px 22px rgba(0,0,0,.18);max-width:min(92vw,520px)}
+.hyl-find.on{display:flex}
+.hyl-find span{font-family:ui-monospace,Consolas,monospace;color:var(--accent);font-weight:700}
+.hyl-find input{font:inherit;font-size:.92rem;border:0;outline:none;background:transparent;
+  color:var(--fg);min-width:min(60vw,300px)}
+.hyl-find .count{font-family:ui-monospace,Consolas,monospace;font-size:.8rem;color:var(--muted);
+  white-space:nowrap}
+
+/* --- degraded-run banner (filled by render when validation failed) --- */
+.hyl-degraded{background:#8a1f1f;color:#ffe9e6;border-radius:8px;
+  padding:.7rem 1rem;margin:0 0 1.2rem;font-weight:600;
+  border:1px solid #b23a2b}
+/* --- unverified banner (no or unresolved semantic verification) --- */
+.hyl-unverified{background:#7a5a10;color:#fff3d6;border-radius:8px;
+  padding:.7rem 1rem;margin:0 0 1.2rem;font-weight:600;
+  border:1px solid #a97c14}
+@media print{.hyl-degraded,.hyl-unverified{border:2px solid #000}}
+
+/* --- fold-level flash --- */
+.hyl-flash{position:fixed;left:50%;transform:translateX(-50%);bottom:3.2rem;z-index:35;
+  font-family:ui-monospace,Consolas,monospace;font-size:.8rem;color:var(--fg);
+  background:var(--sec-bg);border:1px solid var(--border);border-radius:999px;
+  padding:.35rem .9rem;box-shadow:0 4px 14px rgba(0,0,0,.14);opacity:0;
+  pointer-events:none;transition:opacity .15s ease}
+@media (prefers-reduced-motion:reduce){.hyl-flash{transition:none}}
+.hyl-flash.on{opacity:1}
+
+/* --- hint bar --- */
+.hyl-hint{position:fixed;right:.9rem;bottom:.9rem;z-index:30;
+  font-family:ui-monospace,Consolas,monospace;font-size:.74rem;color:var(--muted);
+  background:var(--sec-bg);border:1px solid var(--border);border-radius:999px;
+  padding:.4rem .8rem;box-shadow:0 4px 14px rgba(0,0,0,.12);
+  display:flex;gap:.6rem;align-items:center;cursor:pointer;max-width:calc(100vw - 1.8rem);
+  overflow:hidden;white-space:nowrap}
+.hyl-hint:hover{border-color:var(--accent);color:var(--fg)}
+.hyl-hint b{color:var(--fg);font-weight:700}
+
+/* --- help overlay --- */
+.hyl-help{position:fixed;inset:0;z-index:60;display:none;align-items:center;
+  justify-content:center;background:var(--scrim);padding:1.2rem}
+.hyl-help.on{display:flex}
+.hyl-help-panel{background:var(--sec-bg);border:1px solid var(--border);border-radius:14px;
+  padding:1.4rem 1.6rem;max-width:660px;width:100%;max-height:86vh;overflow:auto;
+  box-shadow:0 18px 50px rgba(0,0,0,.3)}
+.hyl-help-panel h2{margin:0 0 .2rem;font-size:1.1rem}
+.hyl-help-panel .sub{color:var(--muted);font-size:.85rem;margin:0 0 1.1rem}
+.hyl-help-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem 1.8rem}
+@media(max-width:560px){.hyl-help-grid{grid-template-columns:1fr}}
+.hyl-help h3{margin:0 0 .5rem;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ts);font-family:ui-monospace,Consolas,monospace}
+.hyl-help dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.38rem .8rem;align-items:baseline}
+.hyl-help dt{white-space:nowrap}
+.hyl-help dd{margin:0;color:var(--muted);font-size:.88rem}
+.hyl-help .zalias{color:var(--muted);font-size:.78rem;margin:.6rem 0 0}
+kbd{font-family:ui-monospace,Consolas,monospace;font-size:.78rem;background:var(--kbd-bg);
+  color:var(--kbd-fg);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;
+  padding:.1em .4em;white-space:nowrap}
+.hyl-help-foot{margin-top:1.2rem;padding-top:.9rem;border-top:1px solid var(--border);
+  color:var(--muted);font-size:.82rem;display:flex;justify-content:space-between;gap:1rem}
+
+footer{margin-top:2.5rem;color:var(--muted);font-size:.8rem}
+@media print{
+  .controls,nav.toc,.hyl-hint,.hyl-find,.hyl-help{display:none !important}
+  details.sec{border:none;padding:0}
+  li.hyl-folded>ul{display:block}
+  body{max-width:none;padding-bottom:1rem}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto !important}}
+</style>
+</head>
+<body>
+__BANNER__
+<header>
+  <h1><a href="__VIDEO_URL__" target="_blank" rel="noopener">__TITLE__</a></h1>
+  <p class="meta">__META_LINE__</p>
+  <div class="controls">
+    <button id="expand-all" type="button">전체 펼치기 · Expand all</button>
+    <button id="collapse-all" type="button">전체 접기 · Collapse all</button>
+    <button id="help-btn" type="button">단축키 · Keys (?)</button>
+  </div>
+</header>
+<nav class="toc">
+  <details open>
+    <summary>목차 · Contents</summary>
+    <ul>
+__TOC_ITEMS__
+    </ul>
+  </details>
+</nav>
+<main>
+__SECTIONS__
+</main>
+<footer><p>__GENERATED__</p></footer>
+
+<div class="hyl-find" id="hyl-find" role="search">
+  <span>/</span>
+  <input id="hyl-find-input" type="text" autocomplete="off" spellcheck="false"
+         aria-label="Search the log" placeholder="search…">
+  <span class="count" id="hyl-find-count"></span>
+</div>
+
+<button class="hyl-hint" id="hyl-hint" type="button" aria-label="Show keyboard shortcuts">
+  <span><b>j</b>/<b>k</b> move</span><span><b>a</b> fold</span><span><b>r</b>/<b>m</b> level</span><span><b>R</b>/<b>M</b> all</span><span><b>/</b> find</span><span><b>?</b> keys</span>
+</button>
+
+<div class="hyl-help" id="hyl-help" role="dialog" aria-modal="true" aria-labelledby="hyl-help-title">
+  <div class="hyl-help-panel">
+    <h2 id="hyl-help-title">키보드 단축키 · Keyboard shortcuts</h2>
+    <p class="sub">Vim-style. The whole log is navigable without a mouse.</p>
+    <div class="hyl-help-grid">
+      <section>
+        <h3>이동 · Move</h3>
+        <dl>
+          <dt><kbd>j</kbd> <kbd>↓</kbd></dt><dd>next line</dd>
+          <dt><kbd>k</kbd> <kbd>↑</kbd></dt><dd>previous line</dd>
+          <dt><kbd>Ctrl</kbd>+<kbd>d</kbd> / <kbd>u</kbd></dt><dd>half page down / up</dd>
+          <dt><kbd>PgDn</kbd> <kbd>PgUp</kbd></dt><dd>page down / up</dd>
+          <dt><kbd>g</kbd><kbd>g</kbd> / <kbd>G</kbd></dt><dd>first / last line</dd>
+          <dt><kbd>}</kbd> / <kbd>{</kbd></dt><dd>next / previous section</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>접기 · Fold</h3>
+        <dl>
+          <dt><kbd>a</kbd> / <kbd>A</kbd></dt><dd>toggle fold / and all nested</dd>
+          <dt><kbd>o</kbd> / <kbd>O</kbd></dt><dd>open fold / and all nested</dd>
+          <dt><kbd>c</kbd> / <kbd>C</kbd></dt><dd>close fold / and all nested</dd>
+          <dt><kbd>r</kbd> / <kbd>m</kbd></dt><dd>show one level more / less</dd>
+          <dt><kbd>R</kbd> / <kbd>M</kbd></dt><dd>open every fold / close every fold</dd>
+          <dt><kbd>h</kbd></dt><dd>climb: close fold → parent → previous section</dd>
+          <dt><kbd>l</kbd></dt><dd>open fold, else go to child</dd>
+        </dl>
+        <p class="zalias">vim's <kbd>z</kbd>-prefixed spellings (za, zO, zM …) work identically</p>
+      </section>
+      <section>
+        <h3>찾기 · Search</h3>
+        <dl>
+          <dt><kbd>/</kbd></dt><dd>search the log</dd>
+          <dt><kbd>Enter</kbd></dt><dd>jump to first match</dd>
+          <dt><kbd>n</kbd> / <kbd>N</kbd></dt><dd>next / previous match</dd>
+          <dt><kbd>Esc</kbd></dt><dd>clear search / close</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>동작 · Act</h3>
+        <dl>
+          <dt><kbd>Enter</kbd></dt><dd>open video at this timestamp</dd>
+          <dt><kbd>?</kbd></dt><dd>this help</dd>
+          <dt><kbd>Tab</kbd></dt><dd>normal link focus</dd>
+        </dl>
+      </section>
+    </div>
+    <div class="hyl-help-foot"><span>Folds open in print &amp; when a search matches inside them.</span><span><kbd>Esc</kbd> to close</span></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var main=document.querySelector("main");
+  if(!main){return;}
+  var help=document.getElementById("hyl-help"),
+      findBar=document.getElementById("hyl-find"),
+      findInput=document.getElementById("hyl-find-input"),
+      findCount=document.getElementById("hyl-find-count");
+  var rows=[], visible=[], cursor=-1, pending="", hits=[], hitAt=-1;
+  var markedRows=[], activeHitRow=null;
+  /* Built once. `anc[i]` is every fold that can hide row i, so visibility is a
+     question about fold STATE — answered without measuring layout. */
+  var anc=[], idx=new Map(), allFolds=[], summaryOf=new Map(), btnOf=new Map();
+  var cursorEl=null;
+  /* vim's foldlevel: a fold of depth d is open exactly when foldLevel >= d, so
+     zm/zr walk the outline one whole level at a time. */
+  var depthOf=new Map(), maxDepth=1, foldLevel=1;
+
+  /* --- mark bullets that own a nested list --- */
+  Array.prototype.forEach.call(main.querySelectorAll("li"), function(li){
+    var c;
+    for(c=li.firstElementChild;c;c=c.nextElementSibling){
+      if(c.tagName==="UL"){ li.classList.add("hyl-foldable"); return; }
+    }
+  });
+
+  /* the fold target of a row: its own <details> for a header, itself for a foldable bullet */
+  function foldTarget(row){
+    if(row.tagName==="SUMMARY"){ return row.parentElement; }
+    if(row.classList.contains("hyl-foldable")){ return row; }
+    return null;
+  }
+
+  /* the folds standing between a row and the page: those, closed, hide it */
+  function hidersOf(row){
+    var out=[], p=(row.tagName==="SUMMARY")?row.parentElement.parentElement:row.parentElement;
+    while(p&&p!==main){
+      if(p.tagName==="DETAILS"){ out.push(p); }
+      else if(p.tagName==="LI"&&p.classList.contains("hyl-foldable")){ out.push(p); }
+      p=p.parentElement;
+    }
+    return out;
+  }
+
+  rows=Array.prototype.slice.call(main.querySelectorAll("summary, li, p.silence"));
+  rows.forEach(function(r,i){
+    idx.set(r,i);
+    anc[i]=hidersOf(r);
+    if(r.tagName!=="SUMMARY"){ r.setAttribute("tabindex","-1"); }
+    /* every row carries a caret slot and a fold slot, always occupying space, so the
+       cursor never shifts the text and every row's content starts on the same column.
+       The chevron glyph comes from CSS, so a fold writes no text into the DOM. */
+    var slot=document.createElement("span");
+    slot.className="fold-slot";
+    var el=foldTarget(r);
+    if(el){
+      allFolds.push(el);
+      var d=anc[i].length+1;              /* sections are depth 1, their bullets depth 2 */
+      depthOf.set(el,d);
+      if(d>maxDepth){ maxDepth=d; }
+      if(r.tagName==="SUMMARY"){
+        summaryOf.set(el,r);
+        var mark=document.createElement("span");
+        mark.setAttribute("aria-hidden","true");
+        slot.appendChild(mark);
+      } else {
+        var btn=document.createElement("button");
+        btn.type="button"; btn.className="fold-btn";
+        btn.setAttribute("aria-expanded","true");
+        btn.setAttribute("aria-label","Toggle this sub-list");
+        btn.addEventListener("click",function(ev){
+          ev.preventDefault(); ev.stopPropagation();
+          setFold(el,!isOpen(el)); refresh(); paint(false);
+        });
+        btnOf.set(el,btn);
+        slot.appendChild(btn);
+      }
+    }
+    var caret=document.createElement("span");
+    caret.className="hyl-caret"; caret.setAttribute("aria-hidden","true");
+    caret.textContent="▸";
+    r.insertBefore(slot,r.firstChild);
+    r.insertBefore(caret,r.firstChild);
+    r.addEventListener("click",function(ev){
+      ev.stopPropagation();   /* without this, ancestor rows also fire and the outermost wins */
+      var k=visible.indexOf(r); if(k>=0){ cursor=k; paint(false); }
+    });
+  });
+
+  /* a native click on a summary toggles <details> behind our back — resync the index */
+  Array.prototype.forEach.call(main.querySelectorAll("details.sec"),function(d){
+    d.addEventListener("toggle",function(){ refresh(); });
+  });
+
+  /* Visibility IS fold state: no offsetParent, no forced layout, so a fold costs
+     one cheap pass over the rows instead of a full reflow per row. */
+  function refresh(){
+    visible.length=0;
+    for(var i=0;i<rows.length;i++){
+      var a=anc[i], ok=true;
+      for(var j=0;j<a.length;j++){ if(!isOpen(a[j])){ ok=false; break; } }
+      if(ok){ visible.push(rows[i]); }
+    }
+    if(cursor>=visible.length){ cursor=visible.length-1; }
+  }
+  function foldable(row){ return row?foldTarget(row):null; }
+  /* The parent row IS the innermost fold enclosing this one — anc[] already excludes
+     the row's own fold, so a header (nothing above it) correctly reports no parent. */
+  function parentRowOf(row){
+    var a=row?anc[idx.get(row)]:null;
+    if(!a||!a.length){ return null; }
+    var p=a[0];
+    return p.tagName==="DETAILS"?summaryOf.get(p):p;
+  }
+  function isTopLevel(row){
+    var a=row?anc[idx.get(row)]:null;
+    return !!a&&a.length===0;
+  }
+  function isOpen(el){
+    return el.tagName==="DETAILS" ? el.open : !el.classList.contains("hyl-folded");
+  }
+  function setFold(el,open){
+    if(el.tagName==="DETAILS"){ if(el.open!==open){ el.open=open; } return; }
+    el.classList.toggle("hyl-folded",!open);
+    var b=btnOf.get(el), v=open?"true":"false";
+    if(b&&b.getAttribute("aria-expanded")!==v){ b.setAttribute("aria-expanded",v); }
+  }
+  /* when the cursor's line folds away, land on the outermost fold that swallowed it */
+  function recoverCursor(prev){
+    if(!prev){ return; }
+    var at=visible.indexOf(prev), i;
+    if(at<0){
+      var a=anc[idx.get(prev)], rep=null;
+      for(i=0;i<a.length;i++){ if(!isOpen(a[i])){ rep=a[i]; } }
+      if(rep){ at=visible.indexOf(rep.tagName==="DETAILS"?summaryOf.get(rep):rep); }
+    }
+    if(at>=0){ cursor=at; }
+  }
+  /* zm / zr / zM / zR all reduce to one question: which depths stay open? */
+  function applyLevel(L){
+    var prev=cursorEl, i;
+    foldLevel=Math.max(0,Math.min(maxDepth,L));
+    for(i=0;i<allFolds.length;i++){
+      setFold(allFolds[i],foldLevel>=depthOf.get(allFolds[i]));
+    }
+    refresh(); recoverCursor(prev); paint(true);
+    flash(foldLevel===0?"fold level 0 — headers only"
+         :foldLevel>=maxDepth?"fold level "+foldLevel+"/"+maxDepth+" — all open"
+         :"fold level "+foldLevel+"/"+maxDepth);
+  }
+  function foldAll(open){ applyLevel(open?maxDepth:0); }
+  /* the capital-letter commands: this fold AND every fold nested inside it */
+  function setFoldDeep(el,open){
+    setFold(el,open);
+    var kids=el.querySelectorAll("li.hyl-foldable");
+    for(var i=0;i<kids.length;i++){ setFold(kids[i],open); }
+  }
+  /* One dispatcher serves the bare keys AND the z-prefixed vim spellings, so the two
+     can never drift apart. Returns whether the key was a fold command. */
+  function foldCmd(k){
+    if(k==="R"){ applyLevel(maxDepth); return true; }
+    if(k==="M"){ applyLevel(0); return true; }
+    if(k==="r"){ applyLevel(foldLevel+1); return true; }
+    if(k==="m"){ applyLevel(foldLevel-1); return true; }
+    if(k==="a"||k==="o"||k==="c"||k==="A"||k==="O"||k==="C"){
+      var el=foldable(visible[cursor]), prev=cursorEl;
+      if(el){
+        var open=(k==="o"||k==="O")?true:(k==="c"||k==="C")?false:!isOpen(el);
+        if(k!==k.toLowerCase()){ setFoldDeep(el,open); } else { setFold(el,open); }
+        refresh(); recoverCursor(prev); paint(false);
+      }
+      return true;  /* a fold key on a leaf is consumed, never misread as something else */
+    }
+    return false;
+  }
+  function reveal(row){
+    var a=anc[idx.get(row)];
+    for(var i=0;i<a.length;i++){ if(!isOpen(a[i])){ setFold(a[i],true); } }
+  }
+  /* only the row that HAD the cursor is cleared, never all of them */
+  function paint(scroll){
+    if(cursorEl){ cursorEl.classList.remove("hyl-cursor"); cursorEl=null; }
+    var row=visible[cursor];
+    if(!row){return;}
+    cursorEl=row;
+    row.classList.add("hyl-cursor");
+    try{ row.focus({preventScroll:true}); }catch(e){ }
+    if(scroll!==false){ row.scrollIntoView({block:"nearest"}); }
+  }
+  function move(n){
+    if(!visible.length){return;}
+    if(cursor<0){ cursor=0; } else { cursor=Math.min(visible.length-1,Math.max(0,cursor+n)); }
+    paint(true);
+  }
+  function page(){ return Math.max(1,Math.floor(window.innerHeight/34)); }
+  function jumpSection(dir){
+    if(!visible.length){return;}
+    var i=cursor<0?0:cursor;
+    for(var s=i+dir;s>=0&&s<visible.length;s+=dir){
+      if(visible[s].tagName==="SUMMARY"){ cursor=s; paint(true); return; }
+    }
+    cursor=dir>0?visible.length-1:0; paint(true);
+  }
+  function openLink(){
+    var row=visible[cursor]; if(!row){return;}
+    var a=row.querySelector("a[href]"); if(a){ window.open(a.href,"_blank","noopener"); }
+  }
+
+  /* --- search --- */
+  /* The row's searchable text nodes: its own content, never a child row's, never chrome. */
+  function ownTexts(row){
+    var out=[], w=document.createTreeWalker(row,NodeFilter.SHOW_TEXT,null), n, p, chrome;
+    while((n=w.nextNode())){
+      chrome=false; p=n.parentElement;
+      while(p&&p!==row){
+        if(p.tagName==="UL"||p.classList.contains("hyl-caret")
+           ||p.classList.contains("fold-slot")){ chrome=true; break; }
+        p=p.parentElement;
+      }
+      if(!chrome&&n.nodeValue){ out.push(n); }
+    }
+    return out;
+  }
+  /* Each occurrence of q inside a text node becomes a <mark> wrapping that exact span,
+     so the keyword itself lights up — including inside a timestamp link. */
+  function markRow(row,q){
+    var texts=ownTexts(row), made=0;
+    for(var i=0;i<texts.length;i++){
+      var cur=texts[i], at=cur.nodeValue.toLowerCase().indexOf(q);
+      while(at>=0){
+        var hitNode=cur.splitText(at);
+        if(q.length>hitNode.nodeValue.length){ break; }
+        cur=hitNode.splitText(q.length);
+        var m=document.createElement("mark");
+        m.className="hyl-mark";
+        hitNode.parentNode.replaceChild(m,hitNode);
+        m.appendChild(hitNode);
+        made++;
+        at=cur.nodeValue.toLowerCase().indexOf(q);
+      }
+    }
+    if(made){ markedRows.push(row); }
+    return made;
+  }
+  /* Unmark restores the DOM to the letter: marks unwrap, split text nodes re-merge. */
+  function unmarkAll(){
+    for(var i=0;i<markedRows.length;i++){
+      var row=markedRows[i], ms=row.querySelectorAll("mark.hyl-mark");
+      for(var j=0;j<ms.length;j++){
+        var m=ms[j], p=m.parentNode;
+        while(m.firstChild){ p.insertBefore(m.firstChild,m); }
+        p.removeChild(m);
+      }
+      row.normalize();
+    }
+    markedRows=[]; activeHitRow=null;
+  }
+  /* only the row's OWN marks — never those of the rows nested inside it */
+  function setActiveHit(row,on){
+    var ms=row.querySelectorAll("mark.hyl-mark");
+    for(var i=0;i<ms.length;i++){
+      var p=ms[i].parentElement, own=true;
+      while(p&&p!==row){ if(p.tagName==="UL"){ own=false; break; } p=p.parentElement; }
+      if(own){ ms[i].classList.toggle("act",on); }
+    }
+  }
+  function runSearch(q){
+    rows.forEach(function(r){ r.classList.remove("hyl-hit"); });
+    unmarkAll();
+    hits=[]; hitAt=-1;
+    q=(q||"").trim().toLowerCase();
+    if(!q){ findCount.textContent=""; return; }
+    rows.forEach(function(r){
+      var own="";
+      Array.prototype.forEach.call(r.childNodes,function(n){
+        if(n.nodeType===3){ own+=n.nodeValue; }
+        else if(n.nodeType===1&&n.tagName!=="UL"
+                &&!n.classList.contains("hyl-caret")
+                &&!n.classList.contains("fold-slot")){ own+=n.textContent; }
+      });
+      if(own.toLowerCase().indexOf(q)>=0){
+        hits.push(r); r.classList.add("hyl-hit"); markRow(r,q);
+      }
+    });
+    findCount.textContent=hits.length?("1/"+hits.length):"no match";
+    if(hits.length){ hitAt=0; gotoHit(0); }
+  }
+  function gotoHit(i){
+    if(!hits.length){return;}
+    hitAt=(i+hits.length)%hits.length;
+    var row=hits[hitAt];
+    if(activeHitRow&&activeHitRow!==row){ setActiveHit(activeHitRow,false); }
+    activeHitRow=row; setActiveHit(row,true);
+    reveal(row); refresh();
+    var at=visible.indexOf(row);
+    if(at>=0){ cursor=at; paint(true); }
+    findCount.textContent=(hitAt+1)+"/"+hits.length;
+    if(!findBar.classList.contains("on")){ flash("match "+(hitAt+1)+"/"+hits.length); }
+  }
+  function closeFind(clear){
+    findBar.classList.remove("on");
+    if(clear){
+      rows.forEach(function(r){ r.classList.remove("hyl-hit"); });
+      unmarkAll();
+      hits=[]; hitAt=-1; findInput.value=""; findCount.textContent="";
+    }
+  }
+  var helpReturnFocus=null;
+  function toggleHelp(on){
+    var opening = on===undefined? !help.classList.contains("on") : on;
+    help.classList.toggle("on", opening);
+    var panel=help.querySelector(".hyl-help-panel");
+    if(opening&&panel){
+      helpReturnFocus=document.activeElement;
+      panel.setAttribute("tabindex","-1");
+      try{ panel.focus({preventScroll:true}); }catch(e){ }
+    } else if(!opening&&helpReturnFocus){
+      try{ helpReturnFocus.focus({preventScroll:true}); }catch(e){ }
+      helpReturnFocus=null;
+    }
+  }
+  /* a transient toast so zr/zm show where the outline zoom sits */
+  var flashEl=document.createElement("div"), flashTimer=null;
+  flashEl.className="hyl-flash"; flashEl.setAttribute("aria-live","polite");
+  document.body.appendChild(flashEl);
+  function flash(msg){
+    flashEl.textContent=msg; flashEl.classList.add("on");
+    if(flashTimer){ clearTimeout(flashTimer); }
+    flashTimer=setTimeout(function(){ flashEl.classList.remove("on"); },900);
+  }
+
+  findInput.addEventListener("keydown",function(e){
+    /* an Enter that commits a Korean/IME composition is typing, not submission */
+    if(e.isComposing||e.keyCode===229){ e.stopPropagation(); return; }
+    if(e.key==="Escape"){ e.preventDefault(); closeFind(true); paint(true); }
+    else if(e.key==="Enter"){ e.preventDefault(); runSearch(findInput.value); closeFind(false); paint(true); }
+    e.stopPropagation();
+  });
+  document.getElementById("expand-all").addEventListener("click",function(){ foldAll(true); });
+  document.getElementById("collapse-all").addEventListener("click",function(){ foldAll(false); });
+  document.getElementById("help-btn").addEventListener("click",function(){ toggleHelp(); });
+  document.getElementById("hyl-hint").addEventListener("click",function(){ toggleHelp(); });
+  help.addEventListener("click",function(e){ if(e.target===help){ toggleHelp(false); } });
+
+  document.addEventListener("keydown",function(e){
+    var t=e.target;
+    if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable)){ return; }
+    if(e.altKey||e.metaKey){ return; }
+    var k=e.key;
+
+    /* A modifier is a keydown of its own: pressing Shift for zM or zR must not be
+       mistaken for the character after z, or the prefix dies before M ever lands. */
+    if(k==="Shift"||k==="Control"||k==="Alt"||k==="Meta"||
+       k==="CapsLock"||k==="AltGraph"||k==="OS"){ return; }
+
+    /* An Enter on a Tab-focused button/link/summary is native activation, not a vim
+       command — pass it through. The cursor row itself (focused by paint) keeps
+       vim's Enter = open-the-video. */
+    if(k==="Enter"&&t&&t!==cursorEl&&t.closest&&t.closest("button, a, summary")){ return; }
+
+    if(k==="Escape"){ if(help.classList.contains("on")){ toggleHelp(false); } else { closeFind(true); } pending=""; return; }
+    if(help.classList.contains("on")&&k!=="?"){ return; }
+
+    /* only Ctrl+d / Ctrl+u are claimed; Ctrl+F stays the browser's find */
+    if(e.ctrlKey){
+      if(k==="d"||k==="u"){
+        e.preventDefault();
+        move((k==="d"?1:-1)*Math.ceil(page()/2));
+      }
+      return;
+    }
+
+    if(pending==="g"){ pending=""; if(k==="g"){ e.preventDefault(); cursor=0; paint(true); return; } }
+    if(pending==="z"){
+      pending="";
+      if(foldCmd(k)){ e.preventDefault(); }
+      return;
+    }
+
+    /* bare fold keys — this page has no editing commands, so vim's z prefix is optional */
+    if(foldCmd(k)){ e.preventDefault(); return; }
+
+    switch(k){
+      case "j": case "ArrowDown": e.preventDefault(); move(1); break;
+      case "k": case "ArrowUp": e.preventDefault(); move(-1); break;
+      case "PageDown": e.preventDefault(); move(page()); break;
+      case "PageUp": e.preventDefault(); move(-page()); break;
+      case "Home": e.preventDefault(); cursor=0; paint(true); break;
+      case "End": case "G": e.preventDefault(); cursor=visible.length-1; paint(true); break;
+      case "g": pending="g"; break;
+      case "z": pending="z"; break;
+      case "}": e.preventDefault(); jumpSection(1); break;
+      case "{": e.preventDefault(); jumpSection(-1); break;
+      /* h climbs: close this fold, else step to the parent, else — treating the page
+         as one hidden root whose children are the sections — to the previous section.
+         Tapping h repeatedly therefore always keeps moving toward the top. */
+      case "h": {
+        e.preventDefault();
+        var row=visible[cursor], f=foldable(row);
+        if(f&&isOpen(f)){ setFold(f,false); refresh(); paint(false); break; }
+        var par=parentRowOf(row), at;
+        if(par){ at=visible.indexOf(par); if(at>=0){ cursor=at; paint(true); } break; }
+        for(at=cursor-1;at>=0;at--){
+          if(isTopLevel(visible[at])){ cursor=at; paint(true); break; }
+        }
+        break;
+      }
+      case "l": {
+        e.preventDefault();
+        var fo=foldable(visible[cursor]);
+        if(fo&&!isOpen(fo)){ setFold(fo,true); refresh(); paint(false); }
+        else if(cursor<visible.length-1){ move(1); }
+        break;
+      }
+      case "Enter": e.preventDefault(); openLink(); break;
+      case "/": e.preventDefault(); findBar.classList.add("on"); findInput.select(); findInput.focus(); break;
+      case "n": e.preventDefault(); gotoHit(hitAt+1); break;
+      case "N": e.preventDefault(); gotoHit(hitAt-1); break;
+      case "?": e.preventDefault(); toggleHelp(); break;
+      default: break;
+    }
+  });
+
+  /* The hang IS the distance from a row's caret to its first word — measured, because
+     it depends on the monospace face actually in use, not on a guessed em value. */
+  function measureHang(){
+    for(var i=0;i<rows.length;i++){
+      var r=rows[i], a=r.querySelector("a.ts"), c=r.querySelector(".hyl-caret");
+      if(!a||!c){ continue; }
+      var n=a.nextSibling;
+      if(!n||n.nodeType!==3){ continue; }
+      var s=0, v=n.nodeValue;
+      while(s<v.length&&v.charAt(s)===" "){ s++; }
+      if(s>=v.length){ continue; }
+      var rg=document.createRange();
+      rg.setStart(n,s); rg.setEnd(n,s+1);
+      var tr=rg.getBoundingClientRect(), cr=c.getBoundingClientRect();
+      rg.detach&&rg.detach();
+      if(!tr.width||!cr.width){ continue; }
+      var fs=parseFloat(getComputedStyle(r).fontSize)||16;
+      return (tr.left-cr.left)/fs;
+    }
+    return 0;
+  }
+  function applyHang(){
+    var h=measureHang();
+    if(h>0){ main.style.setProperty("--hang",h.toFixed(3)+"em"); }
+    return h;
+  }
+
+  foldLevel=maxDepth;   /* the page renders all-open; the level must say so or zm/zr start off-by-one */
+  refresh();
+  var hang=applyHang();
+  /* a late-arriving font would move the text column; re-measure once the page settles */
+  window.addEventListener("load",function(){ applyHang(); });
+  document.body.setAttribute("data-hyl-hang",hang.toFixed(3));
+  document.body.setAttribute("data-hyl-rows",String(rows.length));
+  document.body.setAttribute("data-hyl-folds",String(main.querySelectorAll("li.hyl-foldable").length));
+})();
+</script>
+</body>
+</html>
