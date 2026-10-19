@@ -1,18 +1,42 @@
-Personal Use License
+Personal and Nonprofit Use License
 
-Copyright (c) 2026 cjunekim
+Copyright (c) 2026 Changjune Kim (cjunekim)
 
-Permission is granted to any individual to download, use, and modify
-this work for personal, noncommercial purposes.
+1. Individuals. Any individual may download, copy, install, use, and
+   modify this work for their own use, whatever the purpose: study,
+   hobby, or their own work or job.
 
-Redistribution of this work or any derivative of it, in whole or in
-part, is not permitted without prior written permission from the
-copyright holder.
+2. Nonprofit organizations. Nonprofit educational and research
+   institutions and noncommercial study groups may use and modify this
+   work internally for noncommercial purposes, including installing it
+   for their own members.
 
-Any commercial use requires prior written permission from the
-copyright holder.
+3. Commercial use. The following require prior written permission from
+   the copyright holder:
+   (a) selling this work or any derivative of it;
+   (b) including it in a paid product, service, course, or training;
+   (c) running it on behalf of others as a service;
+   (d) deploying it across a for-profit organization, such as
+       installing it for multiple employees or building it into an
+       internal tool.
+   An employee using it for their own purposes under section 1 is not
+   deploying it across an organization.
+
+4. Redistribution. Redistribution of this work or any derivative of it,
+   in whole or in part, beyond the uses permitted above requires prior
+   written permission from the copyright holder.
+
+5. Output. The copyright holder claims no rights in output that you
+   create by running this work, such as the timestamped logs and HTML
+   pages it writes for you. You may use and share that output freely,
+   including any portions of this work, such as templates or formatting,
+   that appear in it. This license grants no rights in third-party
+   material that the work or its output may contain, such as video
+   captions and the content they transcribe.
 
 All rights not expressly granted are reserved.
+
+Requests for permission: Changjune Kim <juneaftn@hanmail.net>
 
 THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY

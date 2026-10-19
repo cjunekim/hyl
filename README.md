@@ -146,6 +146,11 @@ hyl은 유튜브 영상을 **검증된 타임스탬프 딥링크 로그**(단일
 
 ## License
 
-Personal Use License — personal, noncommercial use and modification are
-allowed; redistribution or commercial use requires prior written permission.
-See [LICENSE](LICENSE).
+Personal and Nonprofit Use License — individuals may use and modify hyl for
+any purpose of their own, including their own work, and nonprofit educational
+and research organizations may use it internally. Selling it, putting it in a
+paid product or service, running it for others, deploying it across a
+for-profit organization, and other redistribution require prior written
+permission. The author claims no rights in the logs and pages you produce;
+video captions and their content belong to their owners. See
+[LICENSE](LICENSE).
