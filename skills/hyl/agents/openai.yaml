@@ -1,0 +1,12 @@
+interface:
+  display_name: hyl
+  short_description: "Create verified, timestamped logs from YouTube videos"
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

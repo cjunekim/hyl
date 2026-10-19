@@ -143,6 +143,17 @@ FIXTURES = [
     ("F16_quote_ok", [(PART, append(F16_ADDED))], 0, [], []),
     ("F17_quote_fabricated", [(PART, append(F17_ADDED))], 1,
      ["V11_QUOTE_NOT_IN_TRANSCRIPT"], []),
+    ("F18_duplicate_anchor", [(PART, append(
+        "  * [00:02:16] 다음 시간에 뵙겠습니다 「다음 시간에 뵙겠습니다」\n"))],
+     1, ["V12_DUPLICATE_ANCHOR"], []),
+    ("F19_duplicate_spacing", [(PART, append(
+        "  * [00:02:16] 다음  시간에 뵙겠습니다 「다음 시간에 뵙겠습니다」\n"))],
+     1, ["V12_DUPLICATE_ANCHOR"], []),
+    ("F20_single_direct_quote", [(PART, append(
+        "  * [00:02:16] 「다음 시간에 뵙겠습니다」\n"))], 0, [], []),
+    ("F21_separate_source_repetition", [(PART, append(
+        "  * [00:02:16] 다음 시간에 뵙겠습니다\n"
+        "  * [00:02:16] 다음 시간에 뵙겠습니다\n"))], 0, [], []),
 ]
 
 RENDERED = ("F1_clean", "F4_silence_marked")

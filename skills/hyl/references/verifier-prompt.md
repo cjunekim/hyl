@@ -43,11 +43,20 @@ PROCEDURE — for EACH window in scope, consume risk.json's two lists:
 3. COVERAGE: one additional ~2-minute span per window, chosen away from the risk
    spans (window midpoint if free), judged for FABRICATION / OMISSION / LANGUAGE
    as usual.
-4. Skim the window's section headers: do they reflect the actual flow?
+4. QUALITY: skim all log lines for repeated body/anchor text, runs of unedited
+   caption fragments, and quote-only transcription. Check EVERY parent/child
+   group in the log, not only sampled spans: does each child explain, exemplify, support, or
+   qualify its parent? Mere chronological succession is not a hierarchy.
+   Distinguish meaningful source repetition from repetition introduced by the
+   logger. Cite representative lines for a systematic defect. A log can be
+   faithful yet fail QUALITY; do not return CLEAN solely because quotes are true.
+   Consult the local transcript context whenever a relationship is uncertain.
+5. Skim the window's section headers: do they reflect the actual flow?
 
 Severities: FABRICATION (asserts what the transcript does not support),
 OMISSION (substantial content with no log line), LANGUAGE (language drift),
-COSMETIC (format oddity, no content harm).
+QUALITY (redundant text, transcript dumping, or unsupported parent/child
+grouping), COSMETIC (minor appearance only, without readability/content harm).
 
 Judge conservatively: paraphrase and condensation of PHRASING are NOT
 fabrication; the log is denser than a summary but not a word-for-word

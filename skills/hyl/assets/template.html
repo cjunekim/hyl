@@ -83,6 +83,7 @@ main li>ul{margin-left:calc(-1 * var(--hang))}
 main summary,main li,main p.silence{scroll-margin:5rem 0 6rem}
 main .hyl-caret{display:inline-block;width:1em;flex:none;color:transparent;
   font-family:ui-monospace,Consolas,monospace;font-size:1.05em;font-weight:700;
+  text-indent:0;
   -webkit-user-select:none;user-select:none}
 main .hyl-cursor>.hyl-caret{color:var(--cursor-bar)}
 main .hyl-cursor{background:var(--cursor-bg);border-radius:4px;outline:none !important}
@@ -93,14 +94,17 @@ mark.hyl-mark.act{background:var(--mark-act-bg);color:var(--mark-act-fg)}
 
 /* --- fold marker, its own reserved slot so every row's text aligns --- */
 main .fold-slot{display:inline-block;width:1em;flex:none;text-align:left;
-  font-family:ui-monospace,Consolas,monospace;font-size:.78em;color:var(--muted)}
+  font-family:ui-monospace,Consolas,monospace;font-size:1em;color:var(--fg);
+  text-indent:0}
 /* the chevron IS the fold state — derived in CSS, so folding writes no glyphs */
 main .fold-slot>*::before{content:"\25BE"}
 details.sec:not([open])>summary>.fold-slot>*::before{content:"\25B8"}
 main li.hyl-folded>.fold-slot>*::before{content:"\25B8"}
 .fold-btn{font:inherit;line-height:1;color:inherit;background:none;border:0;
-  cursor:pointer;padding:0;width:100%;text-align:left}
+  cursor:pointer;padding:0;width:100%;text-align:left;text-indent:0}
 .fold-btn:hover{color:var(--accent)}
+main li{cursor:default}
+main li.hyl-foldable{cursor:pointer}
 li.hyl-folded>ul{display:none}
 li.hyl-folded::after{content:" \2026";color:var(--muted);font-size:.85em}
 
@@ -350,6 +354,14 @@ __SECTIONS__
     r.insertBefore(caret,r.firstChild);
     r.addEventListener("click",function(ev){
       ev.stopPropagation();   /* without this, ancestor rows also fire and the outermost wins */
+      /* The whole bullet text is a tap target; links and the fold button keep
+         their own actions. Selecting text must not collapse the selection. */
+      var target=ev.target.nodeType===1?ev.target:ev.target.parentElement;
+      var control=target&&target.closest("a, button, input, textarea, select, [contenteditable='true']");
+      var selection=window.getSelection();
+      if(r.tagName==="LI"&&el&&!control&&(!selection||selection.isCollapsed)){
+        setFold(el,!isOpen(el)); refresh();
+      }
       var k=visible.indexOf(r); if(k>=0){ cursor=k; paint(false); }
     });
   });

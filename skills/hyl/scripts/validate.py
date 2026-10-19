@@ -341,6 +341,27 @@ def findings_quotes(lines, haystack):
             if collapse(quote) not in haystack]
 
 
+def findings_duplicate_anchors(lines):
+    """Reject whole-body echo quotes within one entry, not source repetition.
+
+    Collapse whitespace only: punctuation can carry meaning (signs, numbers).
+    A single direct quote is valid syntax; transcript dumping is a semantic check.
+    """
+    out = []
+    for ln in lines:
+        quotes = list(QUOTE_RE.finditer(ln["text"]))
+        if not quotes or ln["text"][quotes[-1].end():].strip():
+            continue
+        quote = quotes[-1]
+        body = collapse(ln["text"][:quote.start()])
+        if body and body == collapse(quote.group(1)):
+            out.append(("error", ln["k"], "V12_DUPLICATE_ANCHOR", ln["n"],
+                        "body repeats its full anchor at %s: %s"
+                        % (hms(ln["ts"]) if ln["ts"] is not None else "?",
+                           excerpt(ln["text"]))))
+    return out
+
+
 def loaded(rundir):
     """The load IS (meta, index, transcript seconds) of a run directory."""
     try:
@@ -385,7 +406,8 @@ def validation(rundir):
                 + findings_duration(timed, int(meta.get("duration_s") or 0))
                 + findings_empty(index, spans)
                 + findings_near(timed, events)
-                + findings_quotes(lines, haystack))
+                + findings_quotes(lines, haystack)
+                + findings_duplicate_anchors(lines))
     ordered = sorted(findings, key=lambda f: (f[3], f[2], f[1]))
     entries = {level: [{"window": w, "code": c, "line": n,
                         "part_line": part_line_of(w, n, spans), "detail": d}

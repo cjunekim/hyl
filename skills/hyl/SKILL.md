@@ -166,10 +166,13 @@ Collect per-window verdicts using the host's native wait/result tools, including
 fresh verdicts for parts changed by mechanical repairs. A missing or failed
 verifier is not CLEAN; report it as incomplete verification.
 
-FABRICATION / OMISSION / LANGUAGE findings → one targeted repair round (steps
+FABRICATION / OMISSION / LANGUAGE / QUALITY findings → one targeted repair round (steps
 2→3 for those windows only, findings as {REPAIR_NOTES}), then recompute risk
 spans and re-dispatch a separate verifier for each repaired window. Complete
 these checks before the final step-4 render. COSMETIC → summary only.
+Treat repetition, caption dumping, and meaningless hierarchy as QUALITY, not
+COSMETIC. For a systematic QUALITY finding, rewrite the affected window as
+meaning units rather than deleting information or leaving only its quotes.
 
 PERSIST THE VERDICT — two artifacts, written by you:
 - `RUN_DIR/verify.md`: header line `# semantic verdict · <date> · windows 1..N`,
@@ -198,6 +201,12 @@ macOS: `open '<absolute-html-path>'`; Linux: `xdg-open '<absolute-html-path>'`).
 If opening is unavailable, provide a clickable artifact path. Summarize:
 title, duration, windows, log-line count, repairs performed, outstanding
 warnings/findings, artifact paths.
+
+When a browser runtime is available, check a narrow mobile viewport: after
+collapsing all, tap a section title and then a parent bullet's text; its children
+must become visible. Check that arrows remain inside the viewport and timestamp
+links still navigate. DOM depth alone is not visual verification; disclose an
+unavailable browser check rather than claiming mobile behavior was tested.
 
 ## Multiple URLs
 Pipeline per video (per-video RUN_DIRs); step-2 dispatches of different videos

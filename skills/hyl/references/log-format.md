@@ -1,10 +1,19 @@
 # The HYL log contract
 
 The log IS the video's content as a high-resolution chronological stream — a
-**log, not a summary**: nothing is compressed away, and order is time, never
-topic. Distilled from the original `multipage_hyl` chat prompt (§1, §2, §4); that
+**log, not a summary**: preserve distinct claims, qualifications, examples,
+questions, and transitions; order is time, never topic. Distilled from the
+original `multipage_hyl` chat prompt (§1, §2, §4); that
 prompt's pagination protocol and anti-falloff directives (§3, §6, §7) are retired,
 replaced by windowed parallel dispatch plus `scripts/validate.py` invariants.
+
+## Meaning units and hierarchy
+Preserve information, not caption segmentation. Join adjacent fragments into
+readable sentences without inventing missing information. Do not make every
+caption a bullet or use arbitrary indentation to imitate a hierarchy.
+Use section topic → main point → explanation/example/evidence/qualification.
+Each child must develop its parent; a new thought becomes a sibling. Keep
+genuine ambiguity and source truncation visible.
 
 ## Language protocol
 The log is written in the EXACT language of the audio/transcript. Never
@@ -47,6 +56,10 @@ Three levels, two spaces of indent per level, every line timestamped:
   transcript (`V11_QUOTE_NOT_IN_TRANSCRIPT`). Unresolvable ASR garble at a
   decision point is surfaced as `(불명확: <verbatim garble>)`, never silently
   resolved.
+- Keep anchors minimal and only where required. A whole body repeated as its
+  own anchor (`X 「X」`) fails `V12_DUPLICATE_ANCHOR`. Necessary direct quotations
+  may appear once; long runs of quote-only caption fragments fail semantic
+  QUALITY review. Do not remove meaningful repetition by the speaker.
 - Bullet text carries no markdown styling — plain text after the timestamp.
 - Blank lines are permitted and ignored by tooling; every non-blank line starts
   with `* [hh:mm:ss] ` after its indent.
